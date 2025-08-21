@@ -2770,7 +2770,7 @@ import { Button } from 'button-library';`,
   ];
   
   const tabs = [
-    // { id: 'error', label: 'Debug Error', icon: AlertTriangle, color: 'from-yellow-400 to-orange-500' },
+    { id: 'error', label: 'Debug Error', icon: AlertTriangle, color: 'from-yellow-400 to-orange-500' },
     { id: 'readme', label: 'Generate README', icon: FileText, color: 'from-green-500 to-teal-600' },
     { id: 'effects', label: 'Effects Vault', icon: Code, color: 'from-purple-500 to-pink-600' },
     { id: 'email', label: 'Email Templates', icon: Mail, color: 'from-blue-500 to-indigo-600' },
