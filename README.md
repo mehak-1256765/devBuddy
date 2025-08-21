@@ -95,17 +95,27 @@ Build for production
 npm run build
 # or
 yarn build
+
 The built files will be in the build directory.
 
 Technologies Used
+
 Frontend
+
 React - A JavaScript library for building user interfaces
+
 TypeScript - Typed JavaScript
+
 Tailwind CSS - Utility-first CSS framework
+
 Lucide React - Beautiful & consistent icons
+
 AI Integration
+
 OpenAI GPT-4 - For error analysis and content generation
+
 Code Execution
+
 Browser's native JavaScript evaluation
 
 
