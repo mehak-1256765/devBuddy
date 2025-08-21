@@ -1,0 +1,73 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+  .animate-fade-in {
+    animation: fadeIn 0.5s ease-out;
+  }
+
+  .animate-float {
+    animation: float 3s ease-in-out forwards;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes float {
+    0% {
+      opacity: 0;
+      transform: translateY(0) rotate(0deg) scale(0.5);
+    }
+    20% {
+      opacity: 1;
+      transform: translateY(-30px) rotate(180deg) scale(1);
+    }
+    80% {
+      opacity: 1;
+      transform: translateY(-100px) rotate(360deg) scale(1.2);
+    }
+    100% {
+      opacity: 0;
+      transform: translateY(-150px) rotate(540deg) scale(0.3);
+    }
+  }
+}
+
+/* Custom scrollbar styles */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+/* Smooth focus transitions */
+*:focus {
+  outline: none;
+}
+
+/* Ensure text is readable on all backgrounds */
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
