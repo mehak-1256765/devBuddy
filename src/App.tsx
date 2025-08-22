@@ -94,148 +94,54 @@ interface Solution {
   aiAnalyzed?: boolean;
 }
 
-// AI-powered error analysis function
+// AI-powered error analysis function (real API version)
 const analyzeErrorWithAI = async (errorMessage: string): Promise<Solution> => {
+  const query = encodeURIComponent(errorMessage);
+
   try {
-    // In a real implementation, this would call an AI API
-    // For demonstration, we'll simulate an AI response with a timeout
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        // Simulate AI analysis based on error message
-        if (errorMessage.includes("Cannot read property") && errorMessage.includes("undefined")) {
-          resolve({
-            title: "Undefined Property Access Error",
-            description: "You're trying to access a property on an undefined object. This is a common JavaScript error when working with APIs or optional data.",
-            category: "runtime",
-            steps: [
-              "Add null checks using optional chaining (?.)",
-              "Provide default values using the nullish coalescing operator (??)",
-              "Initialize your state with default values",
-              "Validate data before accessing properties"
-            ],
-            codeExample: `// Before (causes error)
-const userName = user.profile.name; // user is undefined
-// After (fixed)
-const userName = user?.profile?.name ?? 'Guest';
-// React state example
-const [user, setUser] = useState(null); // Bad
-// Better approach
-const [user, setUser] = useState({
-  profile: {
-    name: 'Guest'
-  }
-});`,
-            tips: [
-              "Always initialize state with sensible defaults",
-              "Use TypeScript to catch these errors during development",
-              "Consider using a form library like Formik or React Hook Form for form state"
-            ],
-            resources: [
-              { title: "MDN: Optional Chaining", url: "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Optional_chaining" },
-              { title: "React: State Management", url: "https://reactjs.org/docs/hooks-state.html" }
-            ],
-            aiAnalyzed: true
-          });
-        } else if (errorMessage.includes("Module not found") || errorMessage.includes("Can't resolve")) {
-          resolve({
-            title: "Missing Dependency Error",
-            description: "The module or package you're trying to import isn't installed in your project.",
-            category: "dependency",
-            steps: [
-              "Install the missing package using npm or yarn",
-              "Check for typos in the import statement",
-              "Verify the package name is correct",
-              "Restart your development server after installing"
-            ],
-            codeExample: `# Install missing package
-npm install package-name
-# Or with yarn
-yarn add package-name
-# If using TypeScript, also install types
-npm install @types/package-name
-# Example import fix
-// Before
-import { Button } from 'button-library'; // Package not installed
-// After installing
-import { Button } from 'button-library';`,
-            tips: [
-              "Check the package documentation for exact installation instructions",
-              "Use package-lock.json or yarn.lock to ensure consistent versions",
-              "Delete node_modules and reinstall if issues persist"
-            ],
-            resources: [
-              { title: "npm Documentation", url: "https://docs.npmjs.com/cli/install" },
-              { title: "Yarn Documentation", url: "https://yarnpkg.com/en/docs/cli/add" }
-            ],
-            aiAnalyzed: true
-          });
-        } else if (errorMessage.includes("SyntaxError") && errorMessage.includes("Unexpected token")) {
-          resolve({
-            title: "Syntax Error",
-            description: "There's a syntax error in your code that JavaScript can't parse.",
-            category: "syntax",
-            steps: [
-              "Check for missing brackets, parentheses, or braces",
-              "Look for missing commas or semicolons",
-              "Verify that all strings are properly closed",
-              "Check for reserved keywords used incorrectly"
-            ],
-            codeExample: `// Common syntax errors and fixes
-// Missing comma
-const obj = {
-  name: 'John'
-  age: 30  // Missing comma here
-};
-// Fixed
-const obj = {
-  name: 'John',
-  age: 30
-};
-// Unclosed string
-const message = 'Hello;  // Missing closing quote
-// Fixed
-const message = 'Hello';`,
-            tips: [
-              "Use a code editor with syntax highlighting and linting",
-              "Pay attention to error messages that often point to the exact line",
-              "Use TypeScript to catch syntax errors during development"
-            ],
-            resources: [
-              { title: "MDN: JavaScript Syntax", url: "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference" },
-              { title: "JavaScript Linting Tools", url: "https://eslint.org/" }
-            ],
-            aiAnalyzed: true
-          });
-        } else {
-          // Default AI response for unknown errors
-          resolve({
-            title: "Error Analysis",
-            description: "AI has analyzed your error and provided the following solution.",
-            category: "ai-analyzed",
-            steps: [
-              "Check the browser console for more details",
-              "Review recent code changes",
-              "Search for the error message online",
-              "Check if all dependencies are properly installed",
-              "Try isolating the problematic code"
-            ],
-            tips: [
-              "Break down complex code into smaller parts",
-              "Use console.log to track variable values",
-              "Check the official documentation for libraries you're using"
-            ],
-            resources: [
-              { title: "MDN Web Docs", url: "https://developer.mozilla.org/" },
-              { title: "Stack Overflow", url: "https://stackoverflow.com/" }
-            ],
-            aiAnalyzed: true
-          });
-        }
-      }, 1500); // Simulate API delay
-    });
-  } catch (error) {
-    console.error('Error analyzing with AI:', error);
-    throw error;
+    const res = await fetch(
+      `https://api.stackexchange.com/2.3/search/advanced?order=desc&sort=relevance&q=${query}&site=stackoverflow&accepted=True`
+    );
+
+    const data = await res.json();
+
+    if (data.items && data.items.length > 0) {
+      const top = data.items[0];
+      return {
+        title: top.title,
+        description: `AI + StackOverflow found a related solution.`,
+        category: "external",
+        steps: [],
+        codeExample: "",
+        tips: ["Check the accepted answer in the linked thread"],
+        resources: [
+          { title: "View Solution on StackOverflow", url: top.link }
+        ],
+        aiAnalyzed: true
+      };
+    }
+
+    // If no results found
+    return {
+      title: "No solution found",
+      description: "Couldn't fetch a relevant answer from StackOverflow.",
+      category: "default",
+      steps: ["Try searching with different keywords"],
+      tips: ["Check the exact wording of your error"],
+      resources: [],
+      aiAnalyzed: true
+    };
+  } catch (err) {
+    console.error("Error fetching StackOverflow:", err);
+    return {
+      title: "API Error",
+      description: "Could not connect to StackOverflow API.",
+      category: "network",
+      steps: ["Check your internet connection", "Try again later"],
+      tips: [],
+      resources: [],
+      aiAnalyzed: true
+    };
   }
 };
 
